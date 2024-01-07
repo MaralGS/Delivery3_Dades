@@ -16,11 +16,6 @@ public class Simulator : MonoBehaviour
 
     public float ReplayChance => _currentDate.Month < 6 ? 0.7f : 0.95f;
 
-
-    private int _nPlayers;
-
-    private List<string> Countries;
-
     [SerializeField]
     private Lexic.NameGenerator namegen;
 

@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using static DadeServer;
+using static DadesSender;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 
@@ -14,10 +14,11 @@ public enum TYPES
     PLAYER,
     NDATE,
     EDATE,
-    ITEM
+    DEATH,
+    DAMAGE
 }
 
-public class DadeServer : MonoBehaviour
+public class DadesSender : MonoBehaviour
 {
     // Start is called before the first frame update
    
@@ -51,57 +52,88 @@ public class DadeServer : MonoBehaviour
     {
         public DateTime dateSession;
         public uint UserID;
-        public uint SessionID;
+        public uint sessionID;
 
         public override WWWForm GetForm()
         {
             WWWForm form = new WWWForm();
             form.AddField("DateTime", dateSession.ToString("yyyy-MM-dd hh:mm:ss"));
             form.AddField("UserID", (int)UserID);
-            form.AddField("SessionID", (int)SessionID);
+            form.AddField("SessionID", (int)sessionID);
             return form;
         }
     };
 
-    class BuyItem : Server
+    class Death : Server
     {
 
-        public int Itemid;
-        public DateTime dateItem;
-        public uint UserID;
-        public uint SessionID;
+        
+        public uint userID;
+        public DateTime deathDate;
+        public uint sessionID;
+        public float posX;
+        public float posY;
+        public float posZ;
 
         public override WWWForm GetForm()
         {
             WWWForm form = new WWWForm();
-            form.AddField("Id", Itemid);
-            form.AddField("DateItem", dateItem.ToString("yyyy-MM-dd hh:mm:ss"));
-            form.AddField("UserID", (int)UserID);
-            form.AddField("SessionID", (int)SessionID);
+            form.AddField("DateItem", deathDate.ToString("yyyy-MM-dd hh:mm:ss"));
+            form.AddField("UserID", (int)userID);
+            form.AddField("SessionID", (int)sessionID);
+            form.AddField("PositionX", (int)posX);
+            form.AddField("PositionY", (int)posY);
+            form.AddField("PositionZ", (int)posZ);
+            return form;
+        }
+
+    };
+    
+    class Damage : Server
+    {
+
+        
+        public uint userID;
+        public int DamageCount;
+        public uint sessionID;
+        public float posX;
+        public float posY;
+        public float posZ;
+
+        public override WWWForm GetForm()
+        {
+            WWWForm form = new WWWForm();
+            form.AddField("DamageCount", DamageCount);
+            form.AddField("UserID", (int)userID);
+            form.AddField("SessionID", (int)sessionID);
+            form.AddField("PositionX", (int)posX);
+            form.AddField("PositionY", (int)posY);
+            form.AddField("PositionZ", (int)posZ);
             return form;
         }
 
     };
 
     Player player;
-    Session NSession = new Session();
-    Session ESession = new Session();
-    BuyItem Item = new BuyItem();
+    Session nSession = new Session();
+    Session eSession = new Session();
+    Death death = new Death();
+    Damage damage = new Damage();
 
     private void OnEnable()
     {
         Simulator.OnNewPlayer += Newserverplayer;
-       // Simulator.OnNewSession += Newserversession;
-       // Simulator.OnEndSession+= Endserversession;
-       // Simulator.OnBuyItem += BuyItemServer;
+        // Simulator.OnNewSession += Newserversession;
+        // Simulator.OnEndSession+= Endserversession;
+        // Simulator.OnBuyItem += DeathPlayer;
     }
-    
+
     private void OnDisable()
     {
         Simulator.OnNewPlayer -= Newserverplayer;
-       // Simulator.OnNewSession -= Newserversession;
-       // Simulator.OnEndSession -= Endserversession;
-       // Simulator.OnBuyItem -= BuyItemServer;
+        // Simulator.OnNewSession -= Newserversession;
+        // Simulator.OnEndSession -= Endserversession;
+        // Simulator.OnBuyItem -= DeathPlayer;
     }
 
 
@@ -138,19 +170,29 @@ public class DadeServer : MonoBehaviour
             {
                 default:
                 case 0:
-                    NSession.UserID = uint.Parse(www.downloadHandler.text);
+                    nSession.UserID = uint.Parse(www.downloadHandler.text);
+                    death.userID = uint.Parse(www.downloadHandler.text);
+                    damage.userID = uint.Parse(www.downloadHandler.text);
                     CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
                 case 1:
-                    NSession.SessionID = uint.Parse(www.downloadHandler.text);
-                    ESession.SessionID = uint.Parse(www.downloadHandler.text);
+                    nSession.sessionID = uint.Parse(www.downloadHandler.text);
+                    death.sessionID = uint.Parse(www.downloadHandler.text);
+                    damage.sessionID = uint.Parse(www.downloadHandler.text);
+                    eSession.sessionID = uint.Parse(www.downloadHandler.text);
                     CallbackEvents.OnNewSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
                 case 2:
-                    ESession.SessionID = uint.Parse(www.downloadHandler.text);
+                    eSession.sessionID = uint.Parse(www.downloadHandler.text);
+                    death.sessionID = uint.Parse(www.downloadHandler.text);
+                    damage.sessionID = uint.Parse(www.downloadHandler.text);
                     CallbackEvents.OnEndSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
                 case 3:
+                    //CallbackEvents.OnDeathCallback.Invoke(uint.Parse(www.downloadHandler.text));
+                    break;
+                case 4:
+                    //CallbackEvents.OnDeathCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
             }
 
@@ -181,12 +223,23 @@ public class DadeServer : MonoBehaviour
    //     StartCoroutine(UploadtoServer(ESession, "CreateEndSession", TYPES.EDATE));
    // }
    // 
-   // public void BuyItemServer(int id, DateTime date)
-   // {
-   //     Item.Itemid = id;
-   //     Item.dateItem = date;
-   //     StartCoroutine(UploadtoServer(Item, "AddBuy", TYPES.ITEM));
-   // }
+   public void DeathPlayer(DateTime date, Transform position)
+   {
+       death.posX = position.position.x;
+       death.posY = position.position.y;
+       death.posZ = position.position.z;
+       death.deathDate = date;
+       StartCoroutine(UploadtoServer(death, "AddDeath", TYPES.DEATH));
+   }
+    
+    public void PlayerDamage(int dmg, Transform position)
+   {
+       damage.posX = position.position.x;
+       damage.posY = position.position.y;
+       damage.posZ = position.position.z;
+       damage.DamageCount = dmg;
+       StartCoroutine(UploadtoServer(death, "AddDeath", TYPES.DEATH));
+   }
 
     
 }
