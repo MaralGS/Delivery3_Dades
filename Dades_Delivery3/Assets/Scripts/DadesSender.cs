@@ -81,9 +81,9 @@ public class DadesSender : MonoBehaviour
             form.AddField("DateItem", deathDate.ToString("yyyy-MM-dd hh:mm:ss"));
             form.AddField("UserID", (int)userID);
             form.AddField("SessionID", (int)sessionID);
-            form.AddField("PositionX", (int)posX);
-            form.AddField("PositionY", (int)posY);
-            form.AddField("PositionZ", (int)posZ);
+            form.AddField("PositionX", posX.ToString());
+            form.AddField("PositionY", posY.ToString());
+            form.AddField("PositionZ", posZ.ToString());
             return form;
         }
 
@@ -106,9 +106,9 @@ public class DadesSender : MonoBehaviour
             form.AddField("DamageCount", DamageCount);
             form.AddField("UserID", (int)userID);
             form.AddField("SessionID", (int)sessionID);
-            form.AddField("PositionX", (int)posX);
-            form.AddField("PositionY", (int)posY);
-            form.AddField("PositionZ", (int)posZ);
+            form.AddField("PositionX", posX.ToString());
+            form.AddField("PositionY", posY.ToString());
+            form.AddField("PositionZ", posZ.ToString());
             return form;
         }
 
@@ -123,16 +123,16 @@ public class DadesSender : MonoBehaviour
     private void OnEnable()
     {
         Simulator.OnNewPlayer += Newserverplayer;
-        // Simulator.OnNewSession += Newserversession;
-        // Simulator.OnEndSession+= Endserversession;
+        Simulator.OnNewSession += Newserversession;
+        Simulator.OnEndSession+= Endserversession;
         // Simulator.OnBuyItem += DeathPlayer;
     }
 
     private void OnDisable()
     {
         Simulator.OnNewPlayer -= Newserverplayer;
-        // Simulator.OnNewSession -= Newserversession;
-        // Simulator.OnEndSession -= Endserversession;
+        Simulator.OnNewSession -= Newserversession;
+        Simulator.OnEndSession -= Endserversession;
         // Simulator.OnBuyItem -= DeathPlayer;
     }
 
@@ -211,18 +211,18 @@ public class DadesSender : MonoBehaviour
         StartCoroutine(UploadtoServer(player, "CreatePlayer",TYPES.PLAYER));
     }
     
-   // public void Newserversession(DateTime date)
-   // {
-   //     NSession.dateSession = date;
-   //     StartCoroutine(UploadtoServer(NSession, "CreateLogSession", TYPES.NDATE));
-   // }
-   // 
-   // public void Endserversession(DateTime date)
-   // {
-   //     ESession.dateSession = date;
-   //     StartCoroutine(UploadtoServer(ESession, "CreateEndSession", TYPES.EDATE));
-   // }
-   // 
+    public void Newserversession(DateTime date)
+    {
+        nSession.dateSession = date;
+        StartCoroutine(UploadtoServer(nSession, "CreateLogSession", TYPES.NDATE));
+    }
+    
+    public void Endserversession(DateTime date)
+    {
+        eSession.dateSession = date;
+        StartCoroutine(UploadtoServer(eSession, "CreateEndSession", TYPES.EDATE));
+    }
+    
    public void DeathPlayer(DateTime date, Transform position)
    {
        death.posX = position.position.x;

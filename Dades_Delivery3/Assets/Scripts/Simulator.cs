@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class Simulator : MonoBehaviour
 {
 
-    public static Action<string, DateTime> OnNewPlayer; //Name, Country and date
+    public static Action<string, DateTime, Transform, int> OnNewPlayer; //Name, Country and date
     public static Action<DateTime> OnNewSession;
     public static Action<DateTime> OnEndSession;
     public static Action<int, DateTime> OnBuyItem; //Item id and date
@@ -51,7 +51,7 @@ public class Simulator : MonoBehaviour
     {
         string name = namegen.GetNextRandomName();
         name = name.Replace("'", " ");
-        OnNewPlayer?.Invoke(name, dateTime);
+        //OnNewPlayer?.Invoke(name, dateTime);
     }
 
     void AddNewSession()
@@ -120,4 +120,6 @@ public class CallbackEvents
     public static Action<uint> OnEndSessionCallback;
     public static Action<uint> OnNewSessionCallback;
     public static Action<uint> OnAddPlayerCallback;
+    public static Action<uint> OnPlayerDeathCallback;
+    public static Action<uint> OnPlayerDamageCallback;
 }
