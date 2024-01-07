@@ -34,30 +34,43 @@ public class SpatialEvent : MonoBehaviour
 
     public class SEvents : Server
     {
-        public string name;
-        public DateTime dateSession;
+        public enum TYPE
+        {
+            POSITION,
+            DEATH,
+            DAMAGE
+        }
 
-        public uint UserID;
+        public string name;
+        public DateTime dateEvent;
+
+        public uint userID;
         public uint sessionID;
 
-        public DateTime deathDate;
         public float posX;
         public float posY;
         public float posZ;
 
         public int damageCount;
 
+        public int step;
+        public int levelEventId;
+
+        TYPES type;
+
         public override WWWForm GetForm()
         {
             WWWForm form = new WWWForm();
             form.AddField("Name", name);
-            form.AddField("DateTime", dateSession.ToString("yyyy-MM-dd hh:mm:ss"));
-            form.AddField("UserID", (int)UserID);
+            form.AddField("DateTime", dateEvent.ToString("yyyy-MM-dd hh:mm:ss"));
+            form.AddField("UserID", (int)userID);
             form.AddField("SessionID", (int)sessionID);
             form.AddField("PositionX", posX.ToString());
             form.AddField("PositionY", posY.ToString());
             form.AddField("PositionZ", posZ.ToString());
             form.AddField("DamageCount", damageCount);
+            form.AddField("Step", step);
+            form.AddField("LevelEventsID", levelEventId);
             return form;
         }
     };
@@ -70,16 +83,16 @@ public class SpatialEvent : MonoBehaviour
     private void OnEnable()
     {
         Simulator.OnNewPlayer += SpEvents;
-        Simulator.OnNewSession += Newserversession;
-        Simulator.OnEndSession += Endserversession;
+       //Simulator.OnNewSession += Newserversession;
+       //Simulator.OnEndSession += Endserversession;
         // Simulator.OnBuyItem += DeathPlayer;
     }
 
     private void OnDisable()
     {
         Simulator.OnNewPlayer -= SpEvents;
-        Simulator.OnNewSession -= Newserversession;
-        Simulator.OnEndSession -= Endserversession;
+       //  Simulator.OnNewSession -= Newserversession;
+       //  Simulator.OnEndSession -= Endserversession;
         // Simulator.OnBuyItem -= DeathPlayer;
     }
 
@@ -117,7 +130,7 @@ public class SpatialEvent : MonoBehaviour
             {
                 default:
                 case 0:
-                    nSession.UserID = uint.Parse(www.downloadHandler.text);
+                    nSession.userID = uint.Parse(www.downloadHandler.text);
 
                     CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
@@ -143,31 +156,32 @@ public class SpatialEvent : MonoBehaviour
         }
     }
 
-    public void SpEvents(string name, DateTime date, Transform position, int playerDmg)
+    public void SpEvents(string name, DateTime date, Transform position, int playerDmg, int step, int levelEvent)
     {
 
         
        sEvents.name = name;
-       sEvents.dateSession = date;
+       sEvents.dateEvent = date;
        sEvents.posX = position.position.x;
        sEvents.posY = position.position.y;
        sEvents.posZ = position.position.z;
-       sEvents.deathDate = date;
        sEvents.damageCount = playerDmg;
+       sEvents.step = step;
+       sEvents.levelEventId = levelEvent;
 
         StartCoroutine(UploadtoServer(sEvents, "SpatialEvents", TYPES.PLAYER));
     }
 
-    public void Newserversession(DateTime date)
-    {
-        nSession.dateSession = date;
-        StartCoroutine(UploadtoServer(nSession, "CreateLogSession", TYPES.NDATE));
-    }
-
-    public void Endserversession(DateTime date)
-    {
-        eSession.dateSession = date;
-        StartCoroutine(UploadtoServer(eSession, "CreateEndSession", TYPES.EDATE));
-    }
+   // public void Newserversession(DateTime date)
+   // {
+   //     nSession.dateSession = date;
+   //     StartCoroutine(UploadtoServer(nSession, "CreateLogSession", TYPES.NDATE));
+   // }
+   //
+   // public void Endserversession(DateTime date)
+   // {
+   //     eSession.dateSession = date;
+   //     StartCoroutine(UploadtoServer(eSession, "CreateEndSession", TYPES.EDATE));
+   // }
 
 }

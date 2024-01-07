@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class Simulator : MonoBehaviour
 {
 
-    public static Action<string, DateTime, Transform, int> OnNewPlayer; //Name, Country and date
+    public static Action<string, DateTime, Transform, int, int, int> OnNewPlayer; //Name, Country and date
     public static Action<DateTime> OnNewSession;
     public static Action<DateTime> OnEndSession;
     public static Action<int, DateTime> OnBuyItem; //Item id and date
