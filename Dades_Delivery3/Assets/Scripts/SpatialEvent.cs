@@ -44,6 +44,7 @@ public class SpatialEvent : MonoBehaviour
         public string name;
         public DateTime dateEvent;
 
+        public uint level;
         public uint userID;
         public uint sessionID;
 
@@ -61,16 +62,18 @@ public class SpatialEvent : MonoBehaviour
         public override WWWForm GetForm()
         {
             WWWForm form = new WWWForm();
-            form.AddField("Name", name);
-            form.AddField("DateTime", dateEvent.ToString("yyyy-MM-dd hh:mm:ss"));
-            form.AddField("UserID", (int)userID);
-            form.AddField("SessionID", (int)sessionID);
+
+            form.AddField("LevelEventsID", levelEventId);
+            form.AddField("Type",type.ToString());
+            form.AddField("level", (int)level);
             form.AddField("PositionX", posX.ToString());
             form.AddField("PositionY", posY.ToString());
             form.AddField("PositionZ", posZ.ToString());
-            form.AddField("DamageCount", damageCount);
+            form.AddField("UserID", (int)userID);
+            form.AddField("SessionID", (int)sessionID);
+            form.AddField("DateTime", dateEvent.ToString("yyyy-MM-dd hh:mm:ss"));
             form.AddField("Step", step);
-            form.AddField("LevelEventsID", levelEventId);
+            
             return form;
         }
     };
@@ -82,17 +85,17 @@ public class SpatialEvent : MonoBehaviour
 
     private void OnEnable()
     {
-        Simulator.OnNewPlayer += SpEvents;
-       //Simulator.OnNewSession += Newserversession;
-       //Simulator.OnEndSession += Endserversession;
+        //Simulator.OnNewPlayer += SpEvents;
+        //Simulator.OnNewSession += Newserversession;
+        //Simulator.OnEndSession += Endserversession;
         // Simulator.OnBuyItem += DeathPlayer;
     }
 
     private void OnDisable()
     {
-        Simulator.OnNewPlayer -= SpEvents;
-       //  Simulator.OnNewSession -= Newserversession;
-       //  Simulator.OnEndSession -= Endserversession;
+        //Simulator.OnNewPlayer -= SpEvents;
+        //  Simulator.OnNewSession -= Newserversession;
+        //  Simulator.OnEndSession -= Endserversession;
         // Simulator.OnBuyItem -= DeathPlayer;
     }
 
