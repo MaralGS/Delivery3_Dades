@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using static DadesSender;
+using static DadesSender.SEvents;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 
@@ -14,8 +15,7 @@ public enum TYPES
     PLAYER,
     NDATE,
     EDATE,
-    DEATH,
-    DAMAGE
+    SPATIAL_EVENT,
 }
 
 public class DadesSender : MonoBehaviour
@@ -64,67 +64,63 @@ public class DadesSender : MonoBehaviour
         }
     };
 
-    class Death : Server
+    public class SEvents : Server
     {
+        public enum SPATIAL_EVENT_TYPE
+        {
+            POSITION,
+            DEATH,
+            DAMAGE
+        }
 
-        
+        public string name;
+        public DateTime dateEvent;
+
+        public uint level;
         public uint userID;
-        public DateTime deathDate;
         public uint sessionID;
+
         public float posX;
         public float posY;
         public float posZ;
 
-        public override WWWForm GetForm()
-        {
-            WWWForm form = new WWWForm();
-            form.AddField("DateItem", deathDate.ToString("yyyy-MM-dd hh:mm:ss"));
-            form.AddField("UserID", (int)userID);
-            form.AddField("SessionID", (int)sessionID);
-            form.AddField("PositionX", posX.ToString());
-            form.AddField("PositionY", posY.ToString());
-            form.AddField("PositionZ", posZ.ToString());
-            return form;
-        }
+        public uint damageCount;
 
-    };
-    
-    class Damage : Server
-    {
+        public int step;
+        public int levelEventId;
 
-        
-        public uint userID;
-        public int DamageCount;
-        public uint sessionID;
-        public float posX;
-        public float posY;
-        public float posZ;
+        public SPATIAL_EVENT_TYPE type;
 
         public override WWWForm GetForm()
         {
             WWWForm form = new WWWForm();
-            form.AddField("DamageCount", DamageCount);
-            form.AddField("UserID", (int)userID);
-            form.AddField("SessionID", (int)sessionID);
+
+            form.AddField("LevelEventsID", levelEventId);
+            form.AddField("Type", type.ToString());
+            form.AddField("Level", (int)level);
             form.AddField("PositionX", posX.ToString());
             form.AddField("PositionY", posY.ToString());
             form.AddField("PositionZ", posZ.ToString());
+            form.AddField("UserID", (int)userID);
+            form.AddField("SessionID", (int)sessionID);
+            form.AddField("DateTime", dateEvent.ToString("yyyy-MM-dd hh:mm:ss"));
+            form.AddField("Step", step);
+
             return form;
         }
-
     };
 
     Player player;
     Session nSession = new Session();
     Session eSession = new Session();
-    Death death = new Death();
-    Damage damage = new Damage();
+    SEvents sEvents = new SEvents();
 
     private void OnEnable()
     {
         Simulator.OnNewPlayer += Newserverplayer;
         Simulator.OnNewSession += Newserversession;
         Simulator.OnEndSession+= Endserversession;
+        Simulator.OnNewSpatialEvent += NewSpatialEvent;
         // Simulator.OnBuyItem += DeathPlayer;
     }
 
@@ -133,13 +129,13 @@ public class DadesSender : MonoBehaviour
         Simulator.OnNewPlayer -= Newserverplayer;
         Simulator.OnNewSession -= Newserversession;
         Simulator.OnEndSession -= Endserversession;
+        Simulator.OnNewSpatialEvent -= NewSpatialEvent;
         // Simulator.OnBuyItem -= DeathPlayer;
     }
 
 
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -171,33 +167,24 @@ public class DadesSender : MonoBehaviour
                 default:
                 case 0:
                     nSession.UserID = uint.Parse(www.downloadHandler.text);
-                    death.userID = uint.Parse(www.downloadHandler.text);
-                    damage.userID = uint.Parse(www.downloadHandler.text);
                     CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
                 case 1:
                     nSession.sessionID = uint.Parse(www.downloadHandler.text);
-                    death.sessionID = uint.Parse(www.downloadHandler.text);
-                    damage.sessionID = uint.Parse(www.downloadHandler.text);
                     eSession.sessionID = uint.Parse(www.downloadHandler.text);
                     CallbackEvents.OnNewSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
                 case 2:
                     eSession.sessionID = uint.Parse(www.downloadHandler.text);
-                    death.sessionID = uint.Parse(www.downloadHandler.text);
-                    damage.sessionID = uint.Parse(www.downloadHandler.text);
                     CallbackEvents.OnEndSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
                     break;
                 case 3:
-                    //CallbackEvents.OnDeathCallback.Invoke(uint.Parse(www.downloadHandler.text));
-                    break;
-                case 4:
-                    //CallbackEvents.OnDeathCallback.Invoke(uint.Parse(www.downloadHandler.text));
-                    break;
-            }
 
-            
-            
+                    //SPATIAL EVENT
+                    
+                    break;
+      
+            }         
         }
     }
 
@@ -222,24 +209,21 @@ public class DadesSender : MonoBehaviour
         eSession.dateSession = date;
         StartCoroutine(UploadtoServer(eSession, "CreateEndSession", TYPES.EDATE));
     }
-    
-   public void DeathPlayer(DateTime date, Transform position)
-   {
-       death.posX = position.position.x;
-       death.posY = position.position.y;
-       death.posZ = position.position.z;
-       death.deathDate = date;
-       StartCoroutine(UploadtoServer(death, "AddDeath", TYPES.DEATH));
-   }
-    
-    public void PlayerDamage(int dmg, Transform position)
-   {
-       damage.posX = position.position.x;
-       damage.posY = position.position.y;
-       damage.posZ = position.position.z;
-       damage.DamageCount = dmg;
-       StartCoroutine(UploadtoServer(death, "AddDeath", TYPES.DEATH));
-   }
 
-    
+    public void NewSpatialEvent(SPATIAL_EVENT_TYPE _type, uint _level, float _positionX, float _positionY, float _positionZ, uint _userID, uint _sessionID, DateTime _eventDate,int _step)
+    {
+
+        sEvents.type = _type;
+        sEvents.level = _level;
+        sEvents.posX = _positionX;
+        sEvents.posY = _positionY;
+        sEvents.posZ = _positionZ;
+        sEvents.userID = _userID;
+        sEvents.sessionID = _sessionID;
+        sEvents.dateEvent = _eventDate;
+        sEvents.step = _step;
+
+        StartCoroutine(UploadtoServer(sEvents, "SpatialEvents", TYPES.SPATIAL_EVENT));
+    }
+
 }

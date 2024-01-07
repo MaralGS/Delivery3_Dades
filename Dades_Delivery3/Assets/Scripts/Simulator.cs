@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static DadesSender.SEvents;
 using Random = UnityEngine.Random;
 
 public class Simulator : MonoBehaviour
@@ -11,6 +12,8 @@ public class Simulator : MonoBehaviour
     public static Action<DateTime> OnNewSession;
     public static Action<DateTime> OnEndSession;
     public static Action<int, DateTime> OnBuyItem; //Item id and date
+    public static Action<SPATIAL_EVENT_TYPE, uint, float, float, float, uint, uint, DateTime, int> OnNewSpatialEvent;
+                            // TYPE EVENT, LEVEL,POSX,POSY,POSZ,USERID,SESSIONID,EVENTDATE,STEP
 
     private DateTime _currentDate;
 
@@ -117,9 +120,9 @@ public class Simulator : MonoBehaviour
 
 public class CallbackEvents
 {
+
     public static Action<uint> OnEndSessionCallback;
     public static Action<uint> OnNewSessionCallback;
     public static Action<uint> OnAddPlayerCallback;
-    public static Action<uint> OnPlayerDeathCallback;
-    public static Action<uint> OnPlayerDamageCallback;
+
 }
