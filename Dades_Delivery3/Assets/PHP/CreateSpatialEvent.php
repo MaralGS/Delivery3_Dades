@@ -16,10 +16,11 @@ $Step = $_POST["Step"];
 
 
 // Attempt Insert a row query execution
-$sqlData = "INSERT INTO SpatialEvents(playerID,SessionStart) VALUES ('$levelEventID','$Type','$Level','$PositionX','$PositionY','$PositionZ','$UserID','$SessionID','$EventDate','$Step')";
+$sqlData = "INSERT INTO SpatialEvents(levelEvent_id,Type,Level,PositionX,PositionY,PositionZ,player_id,session_id,dateEvent,step) VALUES ('$levelEventID','$Type','$Level','$PositionX','$PositionY','$PositionZ','$UserID','$SessionID','$EventDate','$Step')";
 
 if(mysqli_query($connection, $sqlData))
 {
+    echo $sqlData;
     //Returns the value generated for an AUTO_INCREMENT column by the last query
     $lastlevelEventID = mysqli_insert_id($connection);
 	 
