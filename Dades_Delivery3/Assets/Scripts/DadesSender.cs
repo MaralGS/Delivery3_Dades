@@ -1,14 +1,17 @@
 //h ttps://docs.unity3d.com/Manual/UnityWebRequest-SendingForm.html
 
+using Gamekit3D;
+using Gamekit3D.Message;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.Networking;
 using static DadesSender;
 using static DadesSender.SEvents;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
-
+using Random = UnityEngine.Random;
 
 public enum TYPES
 {
@@ -18,10 +21,11 @@ public enum TYPES
     SPATIAL_EVENT,
 }
 
-public class DadesSender : MonoBehaviour
+public class DadesSender : MonoBehaviour, IMessageReceiver
 {
     // Start is called before the first frame update
-   
+
+    public Damageable Ellen;
 
     public class Server
     {
@@ -98,9 +102,9 @@ public class DadesSender : MonoBehaviour
             form.AddField("LevelEventsID", levelEventId);
             form.AddField("Type", type.ToString());
             form.AddField("Level", (int)level);
-            form.AddField("PositionX", posX.ToString());
-            form.AddField("PositionY", posY.ToString());
-            form.AddField("PositionZ", posZ.ToString());
+            form.AddField("PositionX", posX.ToString(CultureInfo.InvariantCulture));
+            form.AddField("PositionY", posY.ToString(CultureInfo.InvariantCulture));
+            form.AddField("PositionZ", posZ.ToString(CultureInfo.InvariantCulture));
             form.AddField("UserID", (int)userID);
             form.AddField("SessionID", (int)sessionID);
             form.AddField("DateTime", dateEvent.ToString("yyyy-MM-dd hh:mm:ss"));
@@ -114,28 +118,24 @@ public class DadesSender : MonoBehaviour
     Session nSession = new Session();
     Session eSession = new Session();
     SEvents sEvents = new SEvents();
-
+    int userID = 0;
+    DateTime date;
     private void OnEnable()
     {
-        Simulator.OnNewPlayer += Newserverplayer;
-        Simulator.OnNewSession += Newserversession;
-        Simulator.OnEndSession+= Endserversession;
-        Simulator.OnNewSpatialEvent += NewSpatialEvent;
-        // Simulator.OnBuyItem += DeathPlayer;
+
+        Ellen.onDamageMessageReceivers.Add(this);
     }
 
     private void OnDisable()
     {
-        Simulator.OnNewPlayer -= Newserverplayer;
-        Simulator.OnNewSession -= Newserversession;
-        Simulator.OnEndSession -= Endserversession;
-        Simulator.OnNewSpatialEvent -= NewSpatialEvent;
-        // Simulator.OnBuyItem -= DeathPlayer;
+       
     }
 
 
     void Start()
     {
+        userID = Random.Range(1, 4);
+        date = DateTime.Now;
     }
 
     // Update is called once per frame
@@ -223,7 +223,24 @@ public class DadesSender : MonoBehaviour
         sEvents.dateEvent = _eventDate;
         sEvents.step = _step;
 
-        StartCoroutine(UploadtoServer(sEvents, "SpatialEvents", TYPES.SPATIAL_EVENT));
+        StartCoroutine(UploadtoServer(sEvents, "CreateSpatialEvent", TYPES.SPATIAL_EVENT));
+    }
+
+    public void OnReceiveMessage(MessageType type, object sender, object msg)
+    {
+        if(msg == null && sender ==null) { throw new NotImplementedException(); }
+        
+        Damageable.DamageMessage damageMessage = (Damageable.DamageMessage)msg;
+
+        if(type == MessageType.DAMAGED)
+        {
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.DAMAGE, 0, damageMessage.direction.x, damageMessage.direction.y, damageMessage.direction.z, (uint)userID, 1, date, 1);
+        }
+        else if(type == MessageType.DEAD) 
+        {
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.DEATH, 0, damageMessage.direction.x, damageMessage.direction.y, damageMessage.direction.z, (uint)userID, 1, date, 1);
+        } 
+
     }
 
 }
