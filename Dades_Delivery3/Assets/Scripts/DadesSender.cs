@@ -26,7 +26,8 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
     // Start is called before the first frame update
 
     public Damageable Ellen;
-
+    public PlayerController Ellen_step;
+    int _ellen_step = 0;
     public class Server
     {
 
@@ -119,6 +120,7 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
     Session eSession = new Session();
     SEvents sEvents = new SEvents();
     int userID = 0;
+    int sesionID = 0;
     DateTime date;
     private void OnEnable()
     {
@@ -135,13 +137,23 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
     void Start()
     {
         userID = Random.Range(1, 4);
+        sesionID = Random.Range(1, 99999);
         date = DateTime.Now;
+        _ellen_step = 0;
+
+        Ellen_step = Ellen.gameObject.GetComponent<PlayerController>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (Ellen_step.footstepPlayer.playing == true)
+        {
+            _ellen_step++;
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.POSITION, 0, Ellen.gameObject.transform.position.x, Ellen.gameObject.transform.position.y, Ellen.gameObject.transform.position.z, (uint)userID, (uint)sesionID, date, _ellen_step);
+        }
+
     }
 
     IEnumerator UploadtoServer(Server s, string link, TYPES type)
@@ -188,11 +200,11 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         }
     }
 
-    public void Newserverplayer(string name, DateTime date)
+    public void Newserverplayer(string _name, DateTime date)
     {
         
         player = new Player();
-        player.name = name;
+        player.name = _name;
         player.datePlayer = date;
         
         StartCoroutine(UploadtoServer(player, "CreatePlayer",TYPES.PLAYER));
@@ -232,13 +244,15 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         
         Damageable.DamageMessage damageMessage = (Damageable.DamageMessage)msg;
         Damageable ellenPosition = (Damageable)sender;
+        
         if(type == MessageType.DAMAGED)
         {
-            NewSpatialEvent(SPATIAL_EVENT_TYPE.DAMAGE, 0, ellenPosition.gameObject.transform.position.x, ellenPosition.gameObject.transform.position.y, ellenPosition.gameObject.transform.position.z, (uint)userID, 1, date, 1);
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.DAMAGE, 0, ellenPosition.gameObject.transform.position.x, ellenPosition.gameObject.transform.position.y, ellenPosition.gameObject.transform.position.z, (uint)userID, (uint)sesionID, date, _ellen_step);
         }
         else if(type == MessageType.DEAD) 
         {
-            NewSpatialEvent(SPATIAL_EVENT_TYPE.DEATH, 0, ellenPosition.gameObject.transform.position.x, ellenPosition.gameObject.transform.position.y, ellenPosition.gameObject.transform.position.z, (uint)userID, 1, date, 1);
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.DEATH, 0, ellenPosition.gameObject.transform.position.x, ellenPosition.gameObject.transform.position.y, ellenPosition.gameObject.transform.position.z, (uint)userID, (uint)sesionID, date, _ellen_step);
+            _ellen_step = 0;
         } 
 
     }
