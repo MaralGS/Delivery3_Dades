@@ -231,14 +231,14 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         if(msg == null && sender ==null) { throw new NotImplementedException(); }
         
         Damageable.DamageMessage damageMessage = (Damageable.DamageMessage)msg;
-
+        Damageable ellenPosition = (Damageable)sender;
         if(type == MessageType.DAMAGED)
         {
-            NewSpatialEvent(SPATIAL_EVENT_TYPE.DAMAGE, 0, damageMessage.direction.x, damageMessage.direction.y, damageMessage.direction.z, (uint)userID, 1, date, 1);
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.DAMAGE, 0, ellenPosition.gameObject.transform.position.x, ellenPosition.gameObject.transform.position.y, ellenPosition.gameObject.transform.position.z, (uint)userID, 1, date, 1);
         }
         else if(type == MessageType.DEAD) 
         {
-            NewSpatialEvent(SPATIAL_EVENT_TYPE.DEATH, 0, damageMessage.direction.x, damageMessage.direction.y, damageMessage.direction.z, (uint)userID, 1, date, 1);
+            NewSpatialEvent(SPATIAL_EVENT_TYPE.DEATH, 0, ellenPosition.gameObject.transform.position.x, ellenPosition.gameObject.transform.position.y, ellenPosition.gameObject.transform.position.z, (uint)userID, 1, date, 1);
         } 
 
     }
