@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using static DadesSender.SEvents;
 using Random = UnityEngine.Random;
@@ -62,6 +63,25 @@ public class Simulator : MonoBehaviour
         DateTime dateTime = _currentDate;
         OnNewSession?.Invoke(dateTime);
     }
+
+    string FiltreInfo(SPATIAL_EVENT_TYPE type, int player_id = 0, int session_id = 0)
+    {
+        string request;
+
+        request = "Select session_id,player_id,type,PositionX,PositionY,PositionZ from SpatialEvents where Type = " + type.ToString();
+
+        if (player_id != 0)
+        {
+            request = request + " and player_id = " + player_id.ToString();
+        }
+        if (session_id != 0)
+        {
+            request = request + " and session_id = " + session_id.ToString();
+        }
+
+        return request;
+    }
+
 
    // void EndSession()
    // {
