@@ -13,12 +13,11 @@ using static DadesSender.SEvents;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 using Random = UnityEngine.Random;
 
-public enum TYPES
+public enum SPATIAL_EVENT_TYPE
 {
-    PLAYER,
-    NDATE,
-    EDATE,
-    SPATIAL_EVENT,
+    POSITION,
+    DEATH,
+    DAMAGE
 }
 
 public class DadesSender : MonoBehaviour, IMessageReceiver
@@ -37,48 +36,10 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
             return form;
         }
     };
-
-    public class Player : Server
-    {   
-        
-        public string name;
-        public DateTime datePlayer;
- 
-        public override WWWForm GetForm()
-        {
-            WWWForm form = new WWWForm();
-            form.AddField("Name", name);
-            form.AddField("DateTime", datePlayer.ToString("yyyy-MM-dd hh:mm:ss"));
-            return form;
-        }
-    };
-
-    class Session : Server
-    {
-        public DateTime dateSession;
-        public uint UserID;
-        public uint sessionID;
-
-        public override WWWForm GetForm()
-        {
-            WWWForm form = new WWWForm();
-            form.AddField("DateTime", dateSession.ToString("yyyy-MM-dd hh:mm:ss"));
-            form.AddField("UserID", (int)UserID);
-            form.AddField("SessionID", (int)sessionID);
-            return form;
-        }
-    };
-
     public class SEvents : Server
     {
-        public enum SPATIAL_EVENT_TYPE
-        {
-            POSITION,
-            DEATH,
-            DAMAGE
-        }
+     
 
-        public string name;
         public DateTime dateEvent;
 
         public uint level;
@@ -88,8 +49,6 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         public float posX;
         public float posY;
         public float posZ;
-
-        public uint damageCount;
 
         public int step;
         public int levelEventId;
@@ -115,9 +74,6 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         }
     };
 
-    Player player;
-    Session nSession = new Session();
-    Session eSession = new Session();
     SEvents sEvents = new SEvents();
     int userID = 0;
     int sesionID = 0;
@@ -156,14 +112,13 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
 
     }
 
-    IEnumerator UploadtoServer(Server s, string link, TYPES type)
+    IEnumerator UploadtoServer(Server s, string link)
     {
        WWWForm form = new WWWForm();
         form = s.GetForm();
         
         UnityWebRequest www = UnityWebRequest.Post("https://citmalumnes.upc.es/~polrb/"+link+".php", form);
         yield return www.SendWebRequest();
-
         if (www.result != UnityWebRequest.Result.Success)
         {
             Debug.Log(www.error);
@@ -173,55 +128,34 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         {
             Debug.Log("upload completed!");
             Debug.Log(www.downloadHandler.text);
-            int i = (int)type;
-            switch (i)
-            {
-                default:
-                case 0:
-                    nSession.UserID = uint.Parse(www.downloadHandler.text);
-                    CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
-                    break;
-                case 1:
-                    nSession.sessionID = uint.Parse(www.downloadHandler.text);
-                    eSession.sessionID = uint.Parse(www.downloadHandler.text);
-                    CallbackEvents.OnNewSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
-                    break;
-                case 2:
-                    eSession.sessionID = uint.Parse(www.downloadHandler.text);
-                    CallbackEvents.OnEndSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
-                    break;
-                case 3:
-
-                    //SPATIAL EVENT
-                    
-                    break;
-      
-            }         
+          
+           // switch (i)
+           // {
+           //     default:
+           //     case 0:
+           //         nSession.UserID = uint.Parse(www.downloadHandler.text);
+           //         CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
+           //         break;
+           //     case 1:
+           //         nSession.sessionID = uint.Parse(www.downloadHandler.text);
+           //         eSession.sessionID = uint.Parse(www.downloadHandler.text);
+           //         CallbackEvents.OnNewSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
+           //         break;
+           //     case 2:
+           //         eSession.sessionID = uint.Parse(www.downloadHandler.text);
+           //         CallbackEvents.OnEndSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
+           //         break;
+           //     case 3:
+           //
+           //         //SPATIAL EVENT
+           //         
+           //         break;
+           //
+           // }         
         }
     }
 
-    public void Newserverplayer(string _name, DateTime date)
-    {
-        
-        player = new Player();
-        player.name = _name;
-        player.datePlayer = date;
-        
-        StartCoroutine(UploadtoServer(player, "CreatePlayer",TYPES.PLAYER));
-    }
-    
-    public void Newserversession(DateTime date)
-    {
-        nSession.dateSession = date;
-        StartCoroutine(UploadtoServer(nSession, "CreateLogSession", TYPES.NDATE));
-    }
-    
-    public void Endserversession(DateTime date)
-    {
-        eSession.dateSession = date;
-        StartCoroutine(UploadtoServer(eSession, "CreateEndSession", TYPES.EDATE));
-    }
-
+ 
     public void NewSpatialEvent(SPATIAL_EVENT_TYPE _type, uint _level, float _positionX, float _positionY, float _positionZ, uint _userID, uint _sessionID, DateTime _eventDate,int _step)
     {
 
@@ -235,7 +169,7 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         sEvents.dateEvent = _eventDate;
         sEvents.step = _step;
 
-        StartCoroutine(UploadtoServer(sEvents, "CreateSpatialEvent", TYPES.SPATIAL_EVENT));
+        StartCoroutine(UploadtoServer(sEvents, "CreateSpatialEvent"));
     }
 
     public void OnReceiveMessage(MessageType type, object sender, object msg)
