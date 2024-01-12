@@ -5,10 +5,11 @@ $connection = ConnectToDatabase();
 
 // Secure Input
 $QueryWithFilter = $_POST["QueryFilter"];
-$QueryWithFilter = mysqli_real_escape_string($connection, $QueryWithFilter);
+$modifiedString = stripslashes($QueryWithFilter);
+$QueryString = mysqli_real_escape_string($connection, $modifiedString);
 
 // Attempt to execute the query
-$sqlData = $QueryWithFilter;
+$sqlData = $QueryString;
 
 if ($queryResult = mysqli_query($connection, $sqlData)) {
 
