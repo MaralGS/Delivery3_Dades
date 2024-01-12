@@ -6,7 +6,7 @@ using System.Globalization;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class DadesRecive : MonoBehaviour
+public class DadesRecive : MonoBehaviour 
 {
     // Start is called before the first frame update
 
@@ -30,6 +30,7 @@ public class DadesRecive : MonoBehaviour
 
     InfoQuery[] _query;
     int _queryCount = 0;
+    
     public class QServer
     {
 
@@ -79,22 +80,28 @@ public class DadesRecive : MonoBehaviour
     {
 
         _queryCount = 0;
-
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
+ 
+        }
+
         //EnvironmentVariableTarget = UploadtoServer(qEvents, "CreateSpatialEvent");
     }
 
-    IEnumerator UploadtoServer(QServer s,)
+    IEnumerator UploadtoServer(QServer s)
     {
         _queryCount++;
         WWWForm form = new WWWForm();
         form = s.GetForm();
 
-        UnityWebRequest www = UnityWebRequest.Post("https://citmalumnes.upc.es/~polrb/" + link + ".php", form);
+        UnityWebRequest www = UnityWebRequest.Post("https://citmalumnes.upc.es/~polrb/RecieveSpatialEventQuery.php", form);
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
@@ -145,58 +152,14 @@ public class DadesRecive : MonoBehaviour
                 Debug.LogError("Formato de string no válido para deserializar en InfoQuery.");
             }
         }
-        // else
-        // {
-        //     Debug.Log("upload completed!");
-        //     Debug.Log(www.downloadHandler.text);
-        //
-        //
-        //      _query[_queryCount].type = www;
-        //     _query[_queryCount].dateEvent = www;
-        //
-        //     _query[_queryCount].level = www;
-        //     _query[_queryCount].userID = www;
-        //     _query[_queryCount].sessionID = www;
-        //
-        //     _query[_queryCount].posX = www;
-        //     _query[_queryCount].posY = www;
-        //     _query[_queryCount].posZ = www;
-        //
-        //     _query[_queryCount].step = www;
-        //     _query[_queryCount].levelEventId = www;
-        //
-        //     // switch (i)
-        //     // {
-        //     //     default:
-        //     //     case 0:
-        //     //         nSession.UserID = uint.Parse(www.downloadHandler.text);
-        //     //         CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
-        //     //         break;
-        //     //     case 1:
-        //     //         nSession.sessionID = uint.Parse(www.downloadHandler.text);
-        //     //         eSession.sessionID = uint.Parse(www.downloadHandler.text);
-        //     //         CallbackEvents.OnNewSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
-        //     //         break;
-        //     //     case 2:
-        //     //         eSession.sessionID = uint.Parse(www.downloadHandler.text);
-        //     //         CallbackEvents.OnEndSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
-        //     //         break;
-        //     //     case 3:
-        //     //
-        //     //         //SPATIAL EVENT
-        //     //         
-        //     //         break;
-        //     //
-        //     // }         
-        // }
-
-
     }
 
 
     public void NewSpatialEvent(string query)
     {
-        StartCoroutine(UploadtoServer(qEvents, "CreateSpatialEvent"));
+        query.Replace("\"", " ");
+        qEvents.query = query;
+        StartCoroutine(UploadtoServer(qEvents));
     }
 
 }
