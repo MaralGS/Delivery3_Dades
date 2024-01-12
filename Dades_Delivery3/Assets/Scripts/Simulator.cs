@@ -68,7 +68,7 @@ public class Simulator : MonoBehaviour
     {
         string request;
 
-        request = "Select session_id,player_id,type,PositionX,PositionY,PositionZ from SpatialEvents where Type = " + "'" + type.ToString() + "'";
+        request = "Select levelEvent_id,type,player_id,session_id,PositionX,PositionY,PositionZ,dateEvent,step from SpatialEvents where Type = " + "'" + type.ToString() + "'";
 
         if (player_id != 0)
         {
