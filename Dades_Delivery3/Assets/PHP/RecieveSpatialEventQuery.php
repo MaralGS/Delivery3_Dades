@@ -3,21 +3,27 @@ include 'database_Connection.php';
 
 $connection = ConnectToDatabase();
 
+// Secure Input
 $QueryWithFilter = $_POST["QueryFilter"];
+$QueryWithFilter = mysqli_real_escape_string($connection, $QueryWithFilter);
 
-// Attempt Insert a row query execution
+// Attempt to execute the query
 $sqlData = $QueryWithFilter;
 
-if(mysqli_query($connection, $sqlData))
-{
+if ($queryResult = mysqli_query($connection, $sqlData)) {
 
-    //Returns All the data with the proper filters
-    echo $sqlData;
+    // Fetch results row by row
+
+    while ($row = mysqli_fetch_assoc($queryResult)) {
+
+        // Process each row as needed
+        echo $row["Type"] . "," . $row["PositionX"] . "," . $row["PositionY"] . "," . $row["PositionZ"] . "," ."\n";
+    }
     
-} 
-else
-{
-    echo "ERROR: Could not able to execute $sqlData. " . mysqli_error($connection);
+    // Free the result set
+    mysqli_free_result($queryResult);
+} else {
+    echo "ERROR: Could not execute $sqlData. " . mysqli_error($connection);
 }
 
 CloseConToDatabase($connection);
