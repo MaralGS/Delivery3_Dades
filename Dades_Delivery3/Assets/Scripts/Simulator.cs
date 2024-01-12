@@ -68,7 +68,7 @@ public class Simulator : MonoBehaviour
     {
         string request;
 
-        request = "Select type,PositionX,PositionY,PositionZ from SpatialEvents where Type = " + "'" + type.ToString() + "'";
+        request = "Select Type,PositionX,PositionY,PositionZ from SpatialEvents where Type = " + "'" + type.ToString() + "'";
 
         if (player_id != 0)
         {
@@ -79,6 +79,7 @@ public class Simulator : MonoBehaviour
             request = request + " and session_id = " + session_id.ToString();
         }
 
+       // request.Remove();
         return request;
     }
 
