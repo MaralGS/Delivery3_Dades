@@ -80,7 +80,6 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
     DateTime date;
     private void OnEnable()
     {
-
         Ellen.onDamageMessageReceivers.Add(this);
     }
 

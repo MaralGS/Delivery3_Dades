@@ -6,22 +6,27 @@ using System.Globalization;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
+public struct InfoQuery
+{
+
+    public SPATIAL_EVENT_TYPE type;
+    public float posX;
+    public float posY;
+    public float posZ;
+}
+
 public class DadesRecive : MonoBehaviour 
 {
     // Start is called before the first frame update
 
-    public struct InfoQuery
-    {
 
-       public SPATIAL_EVENT_TYPE type;
-       public float posX;
-       public float posY;
-       public float posZ;
-    }
 
     InfoQuery[] _query;
     int _queryCount = 0;
-    
+    Hitmap heatmap;
+
+
     public class QServer
     {
 
@@ -59,21 +64,21 @@ public class DadesRecive : MonoBehaviour
 
     private void OnEnable()
     {
-      
+        CallbackHitmap.OnDadesReceives += heatmap.InstanceHeadMap;
         //Ellen.onDamageMessageReceivers.Add(this);
     }
 
     private void OnDisable()
     {
-
+        
     }
 
 
     void Start()
     {
-        _query = new InfoQuery[100];
+        _query = new InfoQuery[5000];
         _queryCount = 0;
-        
+        heatmap = gameObject.GetComponent<Hitmap>();
     }
 
     // Update is called once per frame
@@ -81,7 +86,23 @@ public class DadesRecive : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
+            _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            _queryCount = 0;
+            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
+            heatmap.InstanceHeadMap(_query);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            _queryCount = 0;
+            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
+            heatmap.InstanceHeadMap(_query);
         }
 
         //EnvironmentVariableTarget = UploadtoServer(qEvents, "CreateSpatialEvent");
@@ -89,7 +110,7 @@ public class DadesRecive : MonoBehaviour
 
     IEnumerator UploadtoServer(QServer s)
     {
-        _queryCount++;
+        //Acero de damasco <3
         WWWForm form = new WWWForm();
         form = s.GetForm();
 
@@ -108,12 +129,13 @@ public class DadesRecive : MonoBehaviour
             Debug.Log(responseText);
             for (int i = 0; i < parts.Length; i++)
             {
+                _queryCount++;
                 string[] temp = parts[i].Split(';');
                 // Intentar convertir las partes del string a los tipos correctos
                 if (Enum.TryParse(temp[0], out _query[_queryCount].type) &&
-                    float.TryParse(temp[1], out _query[_queryCount].posX) &&
-                    float.TryParse(temp[2], out _query[_queryCount].posY) &&
-                    float.TryParse(temp[3], out _query[_queryCount].posZ))
+                    float.TryParse(temp[1], NumberStyles.Float, CultureInfo.InvariantCulture, out _query[_queryCount].posX) &&
+                    float.TryParse(temp[2], NumberStyles.Float, CultureInfo.InvariantCulture, out _query[_queryCount].posY) &&
+                    float.TryParse(temp[3], NumberStyles.Float, CultureInfo.InvariantCulture, out _query[_queryCount].posZ))
                 {
                     // Acceder a los datos en la estructura
                     Debug.Log("Tipo de evento: " + _query[_queryCount].type);
@@ -121,13 +143,10 @@ public class DadesRecive : MonoBehaviour
                     Debug.Log("Posición Y: " + _query[_queryCount].posY);
                     Debug.Log("Posición Z: " + _query[_queryCount].posZ);
                 }
-                else
-                {
-                    Debug.LogError("Error al convertir valores en el string.");
-                }
             }
-
-
+            
+            Debug.Log("Finished");
+            heatmap.InstanceHeadMap(_query);
         }
     }
 
@@ -138,5 +157,6 @@ public class DadesRecive : MonoBehaviour
         qEvents.type = query;
         StartCoroutine(UploadtoServer(qEvents));
     }
+
 
 }
