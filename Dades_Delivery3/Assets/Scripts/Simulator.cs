@@ -64,22 +64,12 @@ public class Simulator : MonoBehaviour
         OnNewSession?.Invoke(dateTime);
     }
 
-    public static string FiltreInfo(SPATIAL_EVENT_TYPE type, int player_id = 0, int session_id = 0)
+    public static string FiltreInfo(SPATIAL_EVENT_TYPE type)
     {
         string request;
 
-        request = "Select Type,PositionX,PositionY,PositionZ from SpatialEvents where Type = " + "'" + type.ToString() + "'";
+        request = type.ToString();
 
-        if (player_id != 0)
-        {
-            request = request + " and player_id = " + player_id.ToString();
-        }
-        if (session_id != 0)
-        {
-            request = request + " and session_id = " + session_id.ToString();
-        }
-
-       // request.Remove();
         return request;
     }
 

@@ -42,6 +42,7 @@ public class DadesRecive : MonoBehaviour
         }
 
         public string query;
+        public string type;
 
 
         public override WWWForm GetForm()
@@ -49,7 +50,7 @@ public class DadesRecive : MonoBehaviour
             WWWForm form = new WWWForm();
 
             form.AddField("QueryFilter", query);
-
+            form.AddField("TypeFilter", type);
             return form;
         }
     };
@@ -81,7 +82,6 @@ public class DadesRecive : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
- 
         }
 
         //EnvironmentVariableTarget = UploadtoServer(qEvents, "CreateSpatialEvent");
@@ -105,9 +105,10 @@ public class DadesRecive : MonoBehaviour
 
             // Supongamos que el formato del string es " session_id,player_id,type,PositionX,PositionY,PositionZ from SpatialEvents where Type = " + "'" + type.ToString() + "'""
             string[] parts = responseText.Split('\n');
+            Debug.Log(responseText);
             for (int i = 0; i < parts.Length; i++)
             {
-                string[] temp = parts[i].Split(',');
+                string[] temp = parts[i].Split(';');
                 // Intentar convertir las partes del string a los tipos correctos
                 if (Enum.TryParse(temp[0], out _query[_queryCount].type) &&
                     float.TryParse(temp[1], out _query[_queryCount].posX) &&
@@ -133,8 +134,8 @@ public class DadesRecive : MonoBehaviour
 
     public void NewSpatialEvent(string query)
     {
-        query.Replace('"', ' ');
-        qEvents.query = query;
+        qEvents.query = "Select Type,PositionX,PositionY,PositionZ from SpatialEvents where Type = ";
+        qEvents.type = query;
         StartCoroutine(UploadtoServer(qEvents));
     }
 
