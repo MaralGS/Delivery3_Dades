@@ -16,15 +16,15 @@ public class CubeHit : MonoBehaviour
     {
         if (numberCubes >= 10)
         {
-            gameObject.GetComponent<Material>().color = new Color(1, 0, 0);
+            gameObject.GetComponent<Renderer>().material.color = new Color(1, 0, 0);
         }
         else if (numberCubes <= 10 && numberCubes >= 5)
         {
-            gameObject.GetComponent<Material>().color = new Color(0, 1, 0);
+            gameObject.GetComponent<Renderer>().material.color = new Color(0, 1, 0);
         }
         else
         {
-            gameObject.GetComponent<Material>().color = new Color(0, 0, 1);
+            gameObject.GetComponent<Renderer>().material.color = new Color(0, 0, 1);
         }
 
        
