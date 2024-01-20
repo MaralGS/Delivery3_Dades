@@ -14,6 +14,7 @@ public struct InfoQuery
     public float posX;
     public float posY;
     public float posZ;
+    public bool activated;
 }
 
 public class DadesRecive : MonoBehaviour 
@@ -24,7 +25,7 @@ public class DadesRecive : MonoBehaviour
 
     InfoQuery[] _query;
     int _queryCount = 0;
-    Hitmap heatmap;
+    public Hitmap heatmap;
 
 
     public class QServer
@@ -76,9 +77,9 @@ public class DadesRecive : MonoBehaviour
 
     void Start()
     {
-        _query = new InfoQuery[2000];
+        
         _queryCount = 0;
-        heatmap = gameObject.GetComponent<Hitmap>();
+      
     }
 
     // Update is called once per frame
@@ -86,13 +87,15 @@ public class DadesRecive : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
+            _query = new InfoQuery[2000];
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
-
+            
         }
 
         if (Input.GetKeyDown(KeyCode.O))
         {
+            _query = new InfoQuery[50];
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.DEATH));
         
@@ -100,6 +103,7 @@ public class DadesRecive : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.I))
         {
+            _query = new InfoQuery[50];
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.DAMAGE));
    
@@ -129,7 +133,7 @@ public class DadesRecive : MonoBehaviour
             Debug.Log(responseText);
             for (int i = 0; i < parts.Length; i++)
             {
-                _queryCount++;
+               
                 string[] temp = parts[i].Split(';');
                 // Intentar convertir las partes del string a los tipos correctos
                 if (Enum.TryParse(temp[0], out _query[_queryCount].type) &&
@@ -143,10 +147,11 @@ public class DadesRecive : MonoBehaviour
                     Debug.Log("Posición Y: " + _query[_queryCount].posY);
                     Debug.Log("Posición Z: " + _query[_queryCount].posZ);
                 }
+                _queryCount++;
             }
             
             Debug.Log("Finished");
-            heatmap.InstanceHeadMap(_query);
+            heatmap.InstanceHeadMap(_query, parts.Length);
         }
     }
 

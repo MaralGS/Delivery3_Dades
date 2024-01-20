@@ -20,9 +20,9 @@ public class Hitmap : MonoBehaviour
     }
 
 
-    public void InstanceHeadMap(InfoQuery[] hitmap)
+    public void InstanceHeadMap(InfoQuery[] hitmap, int lenght)
     {
-        for (int i = 0; i < hitmap.Length; i++)
+        for (int i = 0; i < lenght; i++)
         {
             switch (hitmap[i].type)
             {
@@ -43,5 +43,5 @@ public class Hitmap : MonoBehaviour
 }
 public class CallbackHitmap
 {
-    public static Action<InfoQuery[]> OnDadesReceives;
+    public static Action<InfoQuery[], int> OnDadesReceives;
 }
