@@ -84,25 +84,25 @@ public class DadesRecive : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
 
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             _queryCount = 0;
-            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
-            heatmap.InstanceHeadMap(_query);
+            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.DEATH));
+        
         }
         
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.I))
         {
             _queryCount = 0;
-            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
-            heatmap.InstanceHeadMap(_query);
+            NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.DAMAGE));
+   
         }
 
         //EnvironmentVariableTarget = UploadtoServer(qEvents, "CreateSpatialEvent");

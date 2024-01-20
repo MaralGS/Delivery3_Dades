@@ -27,15 +27,11 @@ public class Simulator : MonoBehaviour
     private void OnEnable()
     {
         CallbackEvents.OnAddPlayerCallback += OnPlayerAdded;
-        //CallbackEvents.OnNewSessionCallback += OnNewSessionAdded;
-        //CallbackEvents.OnEndSessionCallback += OnEndSessionAdded;
     }
    
     private void OnDisable()
     {
         CallbackEvents.OnAddPlayerCallback -= OnPlayerAdded;
-       // CallbackEvents.OnNewSessionCallback -= OnNewSessionAdded;
-       // CallbackEvents.OnEndSessionCallback -= OnEndSessionAdded;
     }
 
     #endregion
@@ -55,7 +51,6 @@ public class Simulator : MonoBehaviour
     {
         string name = namegen.GetNextRandomName();
         name = name.Replace("'", " ");
-        //OnNewPlayer?.Invoke(name, dateTime);
     }
 
     void AddNewSession()
@@ -72,14 +67,6 @@ public class Simulator : MonoBehaviour
 
         return request;
     }
-
-
-   // void EndSession()
-   // {
-   //     _currentDate = _currentDate.Add(GetSessionLength());
-   //     DateTime dateTime = _currentDate;
-   //     OnEndSession?.Invoke(dateTime);
-   // }
 
     #region Probabilistic values
     DateTime GetNewPlayerDate()
@@ -105,26 +92,6 @@ public class Simulator : MonoBehaviour
     private void OnNewSessionAdded(uint obj)
     {
     }
-
-   //private void OnEndSessionAdded(uint obj)
-   //{
-   //
-   //    if (Random.value > ReplayChance)
-   //    {
-   //        MakeOnePlayer();
-   //        return;
-   //    }
-   //    TimeSpan timeSpan = TimeTillNextSession();
-   //
-   //    _currentDate = _currentDate.Add(timeSpan);
-   //    // Debug.Log(_currentDate.ToLongDateString());
-   //
-   //    if (_currentDate.Year == 2022)
-   //        AddNewSession();
-   //    else
-   //        MakeOnePlayer();
-   //}
-
 
     #endregion
 }

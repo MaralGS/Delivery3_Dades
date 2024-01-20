@@ -127,30 +127,7 @@ public class DadesSender : MonoBehaviour, IMessageReceiver
         {
             Debug.Log("upload completed!");
             Debug.Log(www.downloadHandler.text);
-          
-           // switch (i)
-           // {
-           //     default:
-           //     case 0:
-           //         nSession.UserID = uint.Parse(www.downloadHandler.text);
-           //         CallbackEvents.OnAddPlayerCallback.Invoke(uint.Parse(www.downloadHandler.text));
-           //         break;
-           //     case 1:
-           //         nSession.sessionID = uint.Parse(www.downloadHandler.text);
-           //         eSession.sessionID = uint.Parse(www.downloadHandler.text);
-           //         CallbackEvents.OnNewSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
-           //         break;
-           //     case 2:
-           //         eSession.sessionID = uint.Parse(www.downloadHandler.text);
-           //         CallbackEvents.OnEndSessionCallback.Invoke(uint.Parse(www.downloadHandler.text));
-           //         break;
-           //     case 3:
-           //
-           //         //SPATIAL EVENT
-           //         
-           //         break;
-           //
-           // }         
+     
         }
     }
 
