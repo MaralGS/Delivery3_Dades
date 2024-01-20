@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 2495701867637082724}
   - component: {fileID: 320189493965792554}
   - component: {fileID: -1613646173295204602}
-  - component: {fileID: -6890897443948449978}
-  m_Layer: 0
+  - component: {fileID: -3448786177518964723}
+  m_Layer: 28
   m_Name: HitCube
   m_TagString: Cube
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d093d5f9b9357b4cae47df77ddcd6b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!54 &-6890897443948449978
+--- !u!54 &-3448786177518964723
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,10 +135,10 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 268435456
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1879035703
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0

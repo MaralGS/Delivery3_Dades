@@ -14,15 +14,15 @@ public class CubeHit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (numberCubes >= 10)
+        if (numberCubes >= 20)//molta gent
         {
             gameObject.GetComponent<Renderer>().material.color = new Color(1, 0, 0);
         }
-        else if (numberCubes <= 10 && numberCubes >= 5)
+        else if (numberCubes <= 20 && numberCubes >= 10) //hi npasa poc queña
         {
             gameObject.GetComponent<Renderer>().material.color = new Color(0, 1, 0);
         }
-        else
+        else//esta sool
         {
             gameObject.GetComponent<Renderer>().material.color = new Color(0, 0, 1);
         }

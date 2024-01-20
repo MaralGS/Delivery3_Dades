@@ -76,7 +76,7 @@ public class DadesRecive : MonoBehaviour
 
     void Start()
     {
-        _query = new InfoQuery[5000];
+        _query = new InfoQuery[2000];
         _queryCount = 0;
         heatmap = gameObject.GetComponent<Hitmap>();
     }
