@@ -87,6 +87,7 @@ public class DadesRecive : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
+            DeleteAllHeatMap();
             _query = new InfoQuery[2000];
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.POSITION));
@@ -95,6 +96,8 @@ public class DadesRecive : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.O))
         {
+            DeleteAllHeatMap();
+
             _query = new InfoQuery[50];
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.DEATH));
@@ -103,9 +106,16 @@ public class DadesRecive : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.I))
         {
+            DeleteAllHeatMap();
             _query = new InfoQuery[50];
             _queryCount = 0;
             NewSpatialEvent(Simulator.FiltreInfo(SPATIAL_EVENT_TYPE.DAMAGE));
+   
+        }
+        
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            DeleteAllHeatMap();
    
         }
 
@@ -162,6 +172,16 @@ public class DadesRecive : MonoBehaviour
         qEvents.type = query;
         StartCoroutine(UploadtoServer(qEvents));
     }
-
+    public void DeleteAllHeatMap()
+    {
+        foreach (GameObject o in UnityEngine.Object.FindObjectsOfType<GameObject>())
+        {
+            if (o.gameObject.CompareTag("Cube"))
+            {
+                Destroy(o);
+            }
+        }
+    }
 
 }
+
